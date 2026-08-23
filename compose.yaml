@@ -1,0 +1,17 @@
+services:
+  service-registry:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PORT: ${PORT}
+        SECURITY_USER_NAME: ${SECURITY_USER_NAME}
+        SECURITY_USER_PASSWORD: ${SECURITY_USER_PASSWORD}
+
+    env_file:
+      - .env
+
+    ports:
+      - "${PORT}:${PORT}"
+
+    restart: unless-stopped
