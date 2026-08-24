@@ -1,4 +1,4 @@
-FROM ghcr.io/graalvm/native-image-community:25 AS build
+FROM eclipse-temurin:25-jdk AS build
 
 WORKDIR /app
 
@@ -20,21 +20,20 @@ RUN chmod +x gradlew
 COPY src src
 
 RUN java -version
-RUN native-image --version
 
-RUN ./gradlew clean nativeCompile --no-daemon -x test
+RUN ./gradlew clean bootJar --no-daemon -x test
 
 
-FROM debian:bookworm-slim
+FROM eclipse-temurin:25-jre
 
 WORKDIR /app
 
 COPY --from=build \
-    /app/build/native/nativeCompile/maintenance-service-registry \
-    ./maintenance-service-registry
+    /app/build/libs/*.jar \
+    ./maintenance-service-registry.jar
 
-RUN chmod +x ./maintenance-service-registry
+RUN chmod +x ./maintenance-service-registry.jar
 
 EXPOSE 8761
 
-ENTRYPOINT ["./maintenance-service-registry"]
+ENTRYPOINT ["java", "-jar", "./maintenance-service-registry.jar"]
