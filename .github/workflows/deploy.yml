@@ -20,20 +20,22 @@ jobs:
 
       - name: Configure SSH
         env:
-          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SSH_KEY_B64: ${{ secrets.DEPLOY_SSH_KEY_B64 }}
           CLOUDFLARE_ACCESS_CLIENT_ID: ${{ secrets.CLOUDFLARE_ACCESS_CLIENT_ID }}
           CLOUDFLARE_ACCESS_CLIENT_SECRET: ${{ secrets.CLOUDFLARE_ACCESS_CLIENT_SECRET }}
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
 
-          printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' > ~/.ssh/deploy_key
+          printf '%s' "$DEPLOY_SSH_KEY_B64" | base64 --decode > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
 
-          # Verify that GitHub Actions can actually read the private key
+          echo "Checking SSH private key..."
+
           ssh-keygen -y -f ~/.ssh/deploy_key > /dev/null
 
-          # Configure SSH to use Cloudflare Tunnel
+          echo "SSH private key is valid."
+
           cat > ~/.ssh/config << EOF
           Host ${{ secrets.DEPLOY_HOST }}
               HostName ${{ secrets.DEPLOY_HOST }}
