@@ -51,7 +51,7 @@ jobs:
             "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
             "echo 'SSH connection successful'"
 
-      - name: Configure server environment
+      - name: Create production .env
         env:
           PORT: ${{ secrets.PORT }}
           SECURITY_USER_NAME: ${{ secrets.SECURITY_USER_NAME }}
