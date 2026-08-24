@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
@@ -56,7 +56,7 @@ jobs:
             cd /opt/maintenance-service
 
             echo "Pulling latest code..."
-            git pull origin main
+            git pull origin master
 
             echo "Building and starting services..."
             docker compose up -d --build
