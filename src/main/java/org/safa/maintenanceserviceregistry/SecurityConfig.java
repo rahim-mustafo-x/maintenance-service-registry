@@ -1,4 +1,4 @@
-package org.safa.maintenanceserviceregistery;
+package org.safa.maintenanceserviceregistry;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

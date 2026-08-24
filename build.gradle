@@ -7,7 +7,7 @@ plugins {
 
 group = 'org.safa'
 version = '0.0.1-SNAPSHOT'
-description = 'maintenance-service-registery'
+description = 'maintenance-service-registry'
 
 java {
     toolchain {
