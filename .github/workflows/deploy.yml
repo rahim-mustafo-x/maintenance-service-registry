@@ -30,11 +30,7 @@ jobs:
           printf '%s' "$DEPLOY_SSH_KEY_B64" | base64 --decode > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
 
-          echo "Checking SSH private key..."
-
           ssh-keygen -y -f ~/.ssh/deploy_key > /dev/null
-
-          echo "SSH private key is valid."
 
           cat > ~/.ssh/config << EOF
           Host ${{ secrets.DEPLOY_HOST }}
@@ -55,6 +51,22 @@ jobs:
             "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
             "echo 'SSH connection successful'"
 
+      - name: Configure server environment
+        env:
+          PORT: ${{ secrets.PORT }}
+          SECURITY_USER_NAME: ${{ secrets.SECURITY_USER_NAME }}
+          SECURITY_USER_PASSWORD: ${{ secrets.SECURITY_USER_PASSWORD }}
+        run: |
+          ssh "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
+            "cat > /opt/maintenance-service/.env" << EOF
+          PORT=$PORT
+          SECURITY_USER_NAME=$SECURITY_USER_NAME
+          SECURITY_USER_PASSWORD=$SECURITY_USER_PASSWORD
+          EOF
+
+          ssh "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
+            "chmod 600 /opt/maintenance-service/.env"
+
       - name: Deploy
         run: |
           ssh "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" << 'EOF'
@@ -64,6 +76,9 @@ jobs:
 
             echo "Pulling latest code..."
             git pull origin master
+
+            echo "Checking Docker Compose configuration..."
+            docker compose config > /dev/null
 
             echo "Building and starting services..."
             docker compose up -d --build
