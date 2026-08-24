@@ -6,10 +6,10 @@ import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
 
 @SpringBootApplication
 @EnableEurekaServer
-public class MaintenanceServiceRegisteryApplication {
+public class MaintenanceServiceRegistryApplication {
 
     static void main(String[] args) {
-        SpringApplication.run(MaintenanceServiceRegisteryApplication.class, args);
+        SpringApplication.run(MaintenanceServiceRegistryApplication.class, args);
     }
 
 }
