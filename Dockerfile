@@ -30,11 +30,11 @@ FROM debian:bookworm-slim
 WORKDIR /app
 
 COPY --from=build \
-    /app/build/native/nativeCompile/maintenance-service-registery \
-    ./maintenance-service-registery
+    /app/build/native/nativeCompile/maintenance-service-registry \
+    ./maintenance-service-registry
 
-RUN chmod +x ./maintenance-service-registery
+RUN chmod +x ./maintenance-service-registry
 
 EXPOSE 8761
 
-ENTRYPOINT ["./maintenance-service-registery"]
+ENTRYPOINT ["./maintenance-service-registry"]
