@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # --------------------------------------------------
+      # 1. Install Cloudflare Tunnel
+      # --------------------------------------------------
       - name: Install cloudflared
         run: |
           curl -L \
@@ -18,6 +21,9 @@ jobs:
 
           sudo dpkg -i cloudflared.deb
 
+      # --------------------------------------------------
+      # 2. Configure SSH
+      # --------------------------------------------------
       - name: Configure SSH
         env:
           DEPLOY_SSH_KEY_B64: ${{ secrets.DEPLOY_SSH_KEY_B64 }}
@@ -27,7 +33,10 @@ jobs:
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
 
-          printf '%s' "$DEPLOY_SSH_KEY_B64" | base64 --decode > ~/.ssh/deploy_key
+          printf '%s' "$DEPLOY_SSH_KEY_B64" \
+            | base64 --decode \
+            > ~/.ssh/deploy_key
+
           chmod 600 ~/.ssh/deploy_key
 
           ssh-keygen -y -f ~/.ssh/deploy_key > /dev/null
@@ -44,6 +53,9 @@ jobs:
 
           chmod 600 ~/.ssh/config
 
+      # --------------------------------------------------
+      # 3. Test SSH connection
+      # --------------------------------------------------
       - name: Test SSH connection
         run: |
           ssh \
@@ -51,6 +63,9 @@ jobs:
             "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
             "echo 'SSH connection successful'"
 
+      # --------------------------------------------------
+      # 4. Create production .env
+      # --------------------------------------------------
       - name: Create production .env
         env:
           PORT: ${{ secrets.PORT }}
@@ -67,6 +82,9 @@ jobs:
           ssh "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
             "chmod 600 /opt/maintenance-service/.env"
 
+      # --------------------------------------------------
+      # 5. Deploy
+      # --------------------------------------------------
       - name: Deploy
         run: |
           ssh "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" << 'EOF'
@@ -74,20 +92,51 @@ jobs:
 
             cd /opt/maintenance-service
 
+            echo "========================================"
             echo "Pulling latest code..."
+            echo "========================================"
+
             git pull origin master
 
+            echo "========================================"
             echo "Checking Docker Compose configuration..."
+            echo "========================================"
+
             docker compose config > /dev/null
 
-            echo "Building and starting services..."
-            docker compose up -d --build
+            echo "========================================"
+            echo "Building Docker images..."
+            echo "GraalVM native-image compilation will run"
+            echo "inside the Docker build."
+            echo "========================================"
 
+            docker compose build --pull
+
+            echo "========================================"
+            echo "Starting services..."
+            echo "========================================"
+
+            docker compose up -d
+
+            echo "========================================"
             echo "Removing unused Docker images..."
+            echo "========================================"
+
             docker image prune -f
 
+            echo "========================================"
             echo "Deployment status:"
+            echo "========================================"
+
             docker compose ps
 
+            echo "========================================"
+            echo "Service registry logs:"
+            echo "========================================"
+
+            docker compose logs --tail=50 service-registry
+
+            echo "========================================"
             echo "Deployment complete."
+            echo "========================================"
           EOF

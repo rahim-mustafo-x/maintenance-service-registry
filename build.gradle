@@ -25,12 +25,13 @@ ext {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    implementation 'org.springframework.boot:spring-boot-starter-actuator:4.1.0'
-    implementation 'org.springframework.boot:spring-boot-starter-security:4.1.0'
 }
 
 dependencyManagement {
