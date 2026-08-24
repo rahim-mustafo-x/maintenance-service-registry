@@ -17,6 +17,5 @@ public class SecurityConfig {
                         requests.anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .build();
-
     }
 }
