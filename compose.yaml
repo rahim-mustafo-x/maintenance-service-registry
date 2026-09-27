@@ -15,3 +15,7 @@ services:
       - "${PORT}:${PORT}"
 
     restart: unless-stopped
+
+networks:
+  maintenance-net:
+    external: true
