@@ -8,6 +8,8 @@ services:
         SECURITY_USER_NAME: ${SECURITY_USER_NAME}
         SECURITY_USER_PASSWORD: ${SECURITY_USER_PASSWORD}
 
+    container_name: service-registry
+
     env_file:
       - .env
 
@@ -15,6 +17,7 @@ services:
       - "${PORT}:${PORT}"
 
     restart: unless-stopped
+
     networks:
       - maintenance-net
 
